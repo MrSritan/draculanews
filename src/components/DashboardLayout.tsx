@@ -1,7 +1,7 @@
 import { Link, useRouterState, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { FiltersProvider, useFilters } from "@/lib/filters-context";
-import { DATE_RANGES, GEOGRAPHIES, SECTORS } from "@/lib/intel-data";
+import { DATE_RANGES, GEOGRAPHIES, SECTORS, events } from "@/lib/intel-data";
 
 const NAV: Array<{ to: LinkProps["to"]; label: string }> = [
   { to: "/", label: "News Feed" },
@@ -200,7 +200,67 @@ function TopBar() {
         </span>
         <span className="text-muted-foreground/50">|</span>
         <span>Settings</span>
+        <span className="text-muted-foreground/50">|</span>
+        <button
+          type="button"
+          onClick={exportEventsToCsv}
+          className="rounded-md border border-primary/40 bg-primary/15 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/25"
+        >
+          Export
+        </button>
       </div>
     </header>
   );
+}
+
+function exportEventsToCsv() {
+  const headers = [
+    "id",
+    "publishedAt",
+    "score",
+    "type",
+    "status",
+    "company",
+    "geography",
+    "sector",
+    "publisher",
+    "sourceQuality",
+    "headline",
+    "summary",
+    "sourceUrl",
+  ];
+  const escape = (v: unknown) => {
+    const s = v == null ? "" : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const rows = events.map((e) =>
+    [
+      e.id,
+      e.publishedAt,
+      e.score,
+      e.type,
+      e.status,
+      e.company,
+      e.geography,
+      e.sector.join("|"),
+      e.publisher,
+      e.sourceQuality,
+      e.headline,
+      e.summary,
+      e.sourceUrl ?? "",
+    ]
+      .map(escape)
+      .join(","),
+  );
+  const csv = [headers.join(","), ...rows].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const stamp = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `intel-events-${stamp}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
