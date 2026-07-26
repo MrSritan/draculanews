@@ -41,7 +41,8 @@ function NewsFeedPage() {
 
 function NewsFeedContent() {
   const filters = useFilters();
-  const filtered = useMemo(() => filterEvents(events, filters), [filters]);
+  const [sortBy, setSortBy] = useState<"score" | "newest" | "oldest">("score");
+  const filtered = useMemo(() => filterEvents(events, filters, sortBy), [filters, sortBy]);
   const [selectedId, setSelectedId] = useState<string | null>(filtered[0]?.id ?? null);
   const selected =
     filtered.find((e) => e.id === selectedId) ?? filtered[0] ?? null;
@@ -49,16 +50,25 @@ function NewsFeedContent() {
   return (
     <div className="grid h-[calc(100vh-3.5rem)] grid-cols-[minmax(0,1fr)_460px] gap-4 p-4">
       <section className="scrollbar-slim min-w-0 overflow-y-auto rounded-lg border border-border bg-panel">
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-panel/95 px-4 py-3 backdrop-blur">
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-panel/95 px-4 py-3 backdrop-blur">
           <div>
             <div className="font-serif text-base font-semibold">Ranked signals</div>
             <div className="text-xs text-muted-foreground">
               {filtered.length} event{filtered.length === 1 ? "" : "s"} matching filters
             </div>
           </div>
-          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-            Sorted by score, then date
-          </div>
+          <label className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground">
+            Sort by
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              className="rounded-md border border-border bg-surface-2 px-2 py-1 text-xs font-medium normal-case tracking-normal text-foreground focus:border-primary focus:outline-none"
+            >
+              <option value="score">Score, then date</option>
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+            </select>
+          </label>
         </div>
 
         {filtered.length === 0 ? (
@@ -288,6 +298,7 @@ function EmptyState() {
 function filterEvents(
   list: IntelEvent[],
   f: ReturnType<typeof useFilters>,
+  sortBy: "score" | "newest" | "oldest",
 ): IntelEvent[] {
   const days = dateRangeDays(f.dateRange);
   const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
@@ -299,10 +310,12 @@ function filterEvents(
       f.geography === "India + Global" ? true : e.geography === f.geography,
     )
     .sort((a, b) => {
+      const ta = new Date(a.publishedAt).getTime();
+      const tb = new Date(b.publishedAt).getTime();
+      if (sortBy === "newest") return tb - ta;
+      if (sortBy === "oldest") return ta - tb;
       if (b.score !== a.score) return b.score - a.score;
-      const dt =
-        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-      if (dt !== 0) return dt;
+      if (tb !== ta) return tb - ta;
       const rank: Record<string, number> = {
         official: 0,
         reputable: 1,
