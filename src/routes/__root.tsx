@@ -77,21 +77,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Aerospace & Defence Intelligence" },
+      { title: "News Feed | Aerospace & Defence Intelligence" },
       {
         name: "description",
         content:
-          "Personal aerospace and defence intelligence dashboard. Track startup signals, funding, hiring, contracts, and companies across India and global markets.",
+          "Ranked feed of funding, hiring, contract, partnership, flight-test, and award signals across aerospace and defence companies in India and globally.",
       },
       { name: "author", content: "Aerospace & Defence Intelligence" },
-      { property: "og:title", content: "Aerospace & Defence Intelligence" },
+      { property: "og:title", content: "News Feed | Aerospace & Defence Intelligence" },
       {
         property: "og:description",
         content:
-          "Personal dashboard for aerospace and defence startup intelligence: news, companies, and contacts.",
+          "Ranked feed of funding, hiring, contract, partnership, flight-test, and award signals across aerospace and defence companies in India and globally.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "News Feed | Aerospace & Defence Intelligence" },
+      { name: "twitter:description", content: "Ranked feed of funding, hiring, contract, partnership, flight-test, and award signals across aerospace and defence companies in India and globally." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8d6307f3-1941-47db-9cf3-02eeeb7dcadb/id-preview-77200f90--e477d213-753f-4fc6-aa4e-bc634e60c73b.lovable.app-1785046621157.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8d6307f3-1941-47db-9cf3-02eeeb7dcadb/id-preview-77200f90--e477d213-753f-4fc6-aa4e-bc634e60c73b.lovable.app-1785046621157.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

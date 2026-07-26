@@ -24,7 +24,7 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Personal dashboard news feed of aerospace and defence startup signals with scoring, provenance, and review workflow.",
+          "Ranked feed of funding, hiring, contract, partnership, flight-test, and award signals across aerospace and defence companies in India and globally.",
       },
     ],
   }),
