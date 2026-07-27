@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as CompaniesRouteImport } from './routes/companies'
 import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DigestWeeklyRouteImport } from './routes/digest.weekly'
+import { Route as DigestMonthlyRouteImport } from './routes/digest.monthly'
 
 const CompaniesRoute = CompaniesRouteImport.update({
   id: '/companies',
@@ -28,35 +30,64 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DigestWeeklyRoute = DigestWeeklyRouteImport.update({
+  id: '/digest/weekly',
+  path: '/digest/weekly',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DigestMonthlyRoute = DigestMonthlyRouteImport.update({
+  id: '/digest/monthly',
+  path: '/digest/monthly',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
   '/companies': typeof CompaniesRoute
+  '/digest/monthly': typeof DigestMonthlyRoute
+  '/digest/weekly': typeof DigestWeeklyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
   '/companies': typeof CompaniesRoute
+  '/digest/monthly': typeof DigestMonthlyRoute
+  '/digest/weekly': typeof DigestWeeklyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
   '/companies': typeof CompaniesRoute
+  '/digest/monthly': typeof DigestMonthlyRoute
+  '/digest/weekly': typeof DigestWeeklyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/bookmarks' | '/companies'
+  fullPaths:
+    | '/'
+    | '/bookmarks'
+    | '/companies'
+    | '/digest/monthly'
+    | '/digest/weekly'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/bookmarks' | '/companies'
-  id: '__root__' | '/' | '/bookmarks' | '/companies'
+  to: '/' | '/bookmarks' | '/companies' | '/digest/monthly' | '/digest/weekly'
+  id:
+    | '__root__'
+    | '/'
+    | '/bookmarks'
+    | '/companies'
+    | '/digest/monthly'
+    | '/digest/weekly'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BookmarksRoute: typeof BookmarksRoute
   CompaniesRoute: typeof CompaniesRoute
+  DigestMonthlyRoute: typeof DigestMonthlyRoute
+  DigestWeeklyRoute: typeof DigestWeeklyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +113,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/digest/weekly': {
+      id: '/digest/weekly'
+      path: '/digest/weekly'
+      fullPath: '/digest/weekly'
+      preLoaderRoute: typeof DigestWeeklyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/digest/monthly': {
+      id: '/digest/monthly'
+      path: '/digest/monthly'
+      fullPath: '/digest/monthly'
+      preLoaderRoute: typeof DigestMonthlyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +134,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BookmarksRoute: BookmarksRoute,
   CompaniesRoute: CompaniesRoute,
+  DigestMonthlyRoute: DigestMonthlyRoute,
+  DigestWeeklyRoute: DigestWeeklyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
