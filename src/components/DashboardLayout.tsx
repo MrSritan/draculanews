@@ -8,9 +8,11 @@ const NAV: Array<{ to: LinkProps["to"]; label: string }> = [
   { to: "/", label: "News Feed" },
   { to: "/companies", label: "Companies & Contacts" },
   { to: "/bookmarks", label: "Bookmarks" },
+  { to: "/digest/weekly", label: "Weekly Digest" },
+  { to: "/digest/monthly", label: "Monthly Digest" },
 ];
 
-const COMING_SOON = ["Weekly Digest", "Monthly Digest", "Foreign Internship Opportunities"];
+const COMING_SOON = ["Foreign Internship Opportunities"];
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   return (
