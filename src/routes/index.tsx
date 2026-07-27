@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { BookmarkButton } from "@/components/BookmarkButton";
 import {
   EventTypeBadge,
   ScoreBadge,
@@ -237,7 +238,7 @@ function EventDetail({ event }: { event: IntelEvent }) {
             Open Source
           </ActionButton>
           <ActionButton>Open Company</ActionButton>
-          <ActionButton>Bookmark</ActionButton>
+          <BookmarkButton eventId={event.id} />
           <ActionButton>Mark Reviewed</ActionButton>
           <ActionButton>Ignore</ActionButton>
         </div>
