@@ -2,10 +2,12 @@ import { Link, useRouterState, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { FiltersProvider, useFilters } from "@/lib/filters-context";
 import { DATE_RANGES, GEOGRAPHIES, SECTORS, events } from "@/lib/intel-data";
+import { useBookmarkCount } from "@/lib/bookmarks-store";
 
 const NAV: Array<{ to: LinkProps["to"]; label: string }> = [
   { to: "/", label: "News Feed" },
   { to: "/companies", label: "Companies & Contacts" },
+  { to: "/bookmarks", label: "Bookmarks" },
 ];
 
 const COMING_SOON = ["Weekly Digest", "Monthly Digest", "Foreign Internship Opportunities"];
@@ -26,6 +28,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
 
 function Sidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const bookmarkCount = useBookmarkCount();
 
   return (
     <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-panel">
@@ -45,13 +48,18 @@ function Sidebar() {
             <Link
               key={item.to as string}
               to={item.to}
-              className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              className={`flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                 active
                   ? "bg-accent text-sidebar-active-text"
                   : "text-sidebar-text hover:bg-white/5 hover:text-sidebar-hover-text"
               }`}
             >
               {item.label}
+              {item.to === "/bookmarks" && bookmarkCount > 0 ? (
+                <span className="ml-auto rounded-full border border-primary/40 bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                  {bookmarkCount}
+                </span>
+              ) : null}
             </Link>
           );
         })}
