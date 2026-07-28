@@ -14,7 +14,7 @@ const NAV: Array<{ to: LinkProps["to"]; label: string }> = [
 
 ];
 
-const COMING_SOON = ["Foreign Internship Opportunities"];
+const COMING_SOON: string[] = [];
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   return (
