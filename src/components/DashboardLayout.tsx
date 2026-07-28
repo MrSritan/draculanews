@@ -10,6 +10,8 @@ const NAV: Array<{ to: LinkProps["to"]; label: string }> = [
   { to: "/bookmarks", label: "Bookmarks" },
   { to: "/digest/weekly", label: "Weekly Digest" },
   { to: "/digest/monthly", label: "Monthly Digest" },
+  { to: "/internships", label: "Internships" },
+
 ];
 
 const COMING_SOON = ["Foreign Internship Opportunities"];

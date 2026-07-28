@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as InternshipsRouteImport } from './routes/internships'
 import { Route as CompaniesRouteImport } from './routes/companies'
 import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DigestWeeklyRouteImport } from './routes/digest.weekly'
 import { Route as DigestMonthlyRouteImport } from './routes/digest.monthly'
 
+const InternshipsRoute = InternshipsRouteImport.update({
+  id: '/internships',
+  path: '/internships',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CompaniesRoute = CompaniesRouteImport.update({
   id: '/companies',
   path: '/companies',
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
   '/companies': typeof CompaniesRoute
+  '/internships': typeof InternshipsRoute
   '/digest/monthly': typeof DigestMonthlyRoute
   '/digest/weekly': typeof DigestWeeklyRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
   '/companies': typeof CompaniesRoute
+  '/internships': typeof InternshipsRoute
   '/digest/monthly': typeof DigestMonthlyRoute
   '/digest/weekly': typeof DigestWeeklyRoute
 }
@@ -60,6 +68,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/bookmarks': typeof BookmarksRoute
   '/companies': typeof CompaniesRoute
+  '/internships': typeof InternshipsRoute
   '/digest/monthly': typeof DigestMonthlyRoute
   '/digest/weekly': typeof DigestWeeklyRoute
 }
@@ -69,15 +78,23 @@ export interface FileRouteTypes {
     | '/'
     | '/bookmarks'
     | '/companies'
+    | '/internships'
     | '/digest/monthly'
     | '/digest/weekly'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/bookmarks' | '/companies' | '/digest/monthly' | '/digest/weekly'
+  to:
+    | '/'
+    | '/bookmarks'
+    | '/companies'
+    | '/internships'
+    | '/digest/monthly'
+    | '/digest/weekly'
   id:
     | '__root__'
     | '/'
     | '/bookmarks'
     | '/companies'
+    | '/internships'
     | '/digest/monthly'
     | '/digest/weekly'
   fileRoutesById: FileRoutesById
@@ -86,12 +103,20 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BookmarksRoute: typeof BookmarksRoute
   CompaniesRoute: typeof CompaniesRoute
+  InternshipsRoute: typeof InternshipsRoute
   DigestMonthlyRoute: typeof DigestMonthlyRoute
   DigestWeeklyRoute: typeof DigestWeeklyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/internships': {
+      id: '/internships'
+      path: '/internships'
+      fullPath: '/internships'
+      preLoaderRoute: typeof InternshipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/companies': {
       id: '/companies'
       path: '/companies'
@@ -134,6 +159,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BookmarksRoute: BookmarksRoute,
   CompaniesRoute: CompaniesRoute,
+  InternshipsRoute: InternshipsRoute,
   DigestMonthlyRoute: DigestMonthlyRoute,
   DigestWeeklyRoute: DigestWeeklyRoute,
 }
