@@ -1,0 +1,317 @@
+export type ProgramStatus = "open" | "closed" | "rolling" | "announced";
+export type FundingLevel = "fully-funded" | "stipend" | "partial";
+
+export interface InternshipProgram {
+  id: string;
+  name: string;
+  country: string;
+  flag: string;
+  organisation: string;
+  isGovernment: boolean;
+  summary: string;
+  stipend: string;
+  fundingLevel: FundingLevel;
+  covers: string[];
+  duration: string;
+  disciplines: string[];
+  eligibility: string[];
+  applicationWindow: string;
+  deadlineNote: string;
+  status: ProgramStatus;
+  officialUrl: string;
+}
+
+const DEADLINE_NOTE =
+  "Window is indicative and changes annually — confirm on the official site.";
+
+export const INTERNSHIPS: InternshipProgram[] = [
+  {
+    id: "daad-wise",
+    name: "DAAD WISE",
+    country: "Germany",
+    flag: "🇩🇪",
+    organisation: "DAAD",
+    isGovernment: true,
+    summary:
+      "Summer research placements at German universities and research institutes for Indian undergraduates in STEM.",
+    stipend: "~€861/month",
+    fundingLevel: "stipend",
+    covers: ["Monthly stipend", "Health insurance subsidy", "Travel allowance"],
+    duration: "6–12 weeks",
+    disciplines: ["STEM"],
+    eligibility: [
+      "Indian citizen enrolled in a bachelor's programme in India",
+      "Currently in 3rd or 4th year of a 4-year degree (or 2nd/3rd of 3-year)",
+      "Strong academic record, English proficiency",
+    ],
+    applicationWindow: "Oct–Nov",
+    deadlineNote: DEADLINE_NOTE,
+    status: "announced",
+    officialUrl: "https://www.daad.in",
+  },
+  {
+    id: "daad-rise",
+    name: "DAAD RISE Germany",
+    country: "Germany",
+    flag: "🇩🇪",
+    organisation: "DAAD",
+    isGovernment: true,
+    summary:
+      "Undergraduate research internships with German PhD students at universities and research institutions.",
+    stipend: "Stipend + travel",
+    fundingLevel: "stipend",
+    covers: ["Monthly stipend", "Travel subsidy", "Health insurance subsidy"],
+    duration: "10–12 weeks",
+    disciplines: ["STEM"],
+    eligibility: [
+      "Undergraduate in biology, chemistry, physics, earth sciences, engineering or CS",
+      "Enrolled at a university outside Germany",
+      "English proficiency",
+    ],
+    applicationWindow: "Nov–Dec",
+    deadlineNote: DEADLINE_NOTE,
+    status: "announced",
+    officialUrl: "https://www.daad.de/rise",
+  },
+  {
+    id: "mitacs-globalink",
+    name: "Mitacs Globalink",
+    country: "Canada",
+    flag: "🇨🇦",
+    organisation: "Mitacs (govt-funded)",
+    isGovernment: true,
+    summary:
+      "12-week research internship at a Canadian host university under a faculty supervisor.",
+    stipend: "~CAD 6,000 incl. airfare + housing",
+    fundingLevel: "fully-funded",
+    covers: ["Airfare", "Housing", "Health insurance", "Stipend"],
+    duration: "12 weeks",
+    disciplines: ["STEM"],
+    eligibility: [
+      "Senior undergraduate at an eligible Indian institution",
+      "Minimum CGPA as per Mitacs cutoff",
+      "Available for summer placement in Canada",
+    ],
+    applicationWindow: "Sept",
+    deadlineNote: DEADLINE_NOTE,
+    status: "announced",
+    officialUrl:
+      "https://www.mitacs.ca/our-programs/globalink-research-internship-students/",
+  },
+  {
+    id: "charpak-lab",
+    name: "Charpak Lab Scholarship",
+    country: "France",
+    flag: "🇫🇷",
+    organisation: "French Embassy in India",
+    isGovernment: true,
+    summary:
+      "Research internships in French laboratories across disciplines for Indian undergraduates and masters students.",
+    stipend: "~€860/month + visa fee waiver",
+    fundingLevel: "stipend",
+    covers: ["Monthly living allowance", "Visa fee waiver", "Health cover"],
+    duration: "2–6 months",
+    disciplines: ["All"],
+    eligibility: [
+      "Indian citizen enrolled in an Indian institution",
+      "Between 18 and 30 years old",
+      "Confirmed lab invitation in France",
+    ],
+    applicationWindow: "Feb–Mar",
+    deadlineNote: DEADLINE_NOTE,
+    status: "announced",
+    officialUrl: "https://www.inde.campusfrance.org",
+  },
+  {
+    id: "iusstf-viterbi",
+    name: "IUSSTF-Viterbi Program",
+    country: "USA",
+    flag: "🇺🇸",
+    organisation: "Indo-US S&T Forum",
+    isGovernment: true,
+    summary:
+      "Summer engineering research at USC Viterbi School with Indian undergraduates paired to faculty labs.",
+    stipend: "Fully funded",
+    fundingLevel: "fully-funded",
+    covers: ["Airfare", "On-campus housing", "Stipend"],
+    duration: "8 weeks",
+    disciplines: ["Engineering"],
+    eligibility: [
+      "Third-year engineering undergraduate at a partner institute",
+      "Indian citizen with strong academic record",
+      "No prior US visit not required",
+    ],
+    applicationWindow: "Dec–Feb",
+    deadlineNote: DEADLINE_NOTE,
+    status: "announced",
+    officialUrl: "https://www.iusstf.org",
+  },
+  {
+    id: "sn-bose",
+    name: "S.N. Bose Scholars Program",
+    country: "USA",
+    flag: "🇺🇸",
+    organisation: "IUSSTF / DST",
+    isGovernment: true,
+    summary:
+      "Research placements at leading US universities for Indian undergraduates in the physical and applied sciences.",
+    stipend: "~USD 2,000–3,000/month",
+    fundingLevel: "fully-funded",
+    covers: ["Airfare", "Monthly stipend", "Insurance"],
+    duration: "8–12 weeks",
+    disciplines: ["Physical sciences"],
+    eligibility: [
+      "Third- or fourth-year undergraduate at an eligible Indian institution",
+      "Indian citizen studying physics, chemistry, math, earth sciences or engineering",
+      "Strong CGPA and research interest",
+    ],
+    applicationWindow: "Sept–Nov",
+    deadlineNote: DEADLINE_NOTE,
+    status: "announced",
+    officialUrl: "https://www.iusstf.org",
+  },
+  {
+    id: "cern-summer",
+    name: "CERN Summer Student Programme",
+    country: "Switzerland",
+    flag: "🇨🇭",
+    organisation: "CERN",
+    isGovernment: true,
+    summary:
+      "Work alongside CERN researchers on particle physics, computing and engineering projects at the Geneva campus.",
+    stipend: "~93 CHF/day + travel",
+    fundingLevel: "stipend",
+    covers: ["Daily subsistence", "Travel allowance", "Health insurance"],
+    duration: "8–13 weeks",
+    disciplines: ["Physics", "Engineering", "CS"],
+    eligibility: [
+      "Undergraduate with at least 3 years of study completed by summer",
+      "Not yet holding a PhD",
+      "Working knowledge of English",
+    ],
+    applicationWindow: "Nov–Jan",
+    deadlineNote: DEADLINE_NOTE,
+    status: "announced",
+    officialUrl: "https://careers.cern/summer",
+  },
+  {
+    id: "kaust-vsrp",
+    name: "KAUST VSRP",
+    country: "Saudi Arabia",
+    flag: "🇸🇦",
+    organisation: "KAUST",
+    isGovernment: true,
+    summary:
+      "Visiting Student Research Program placing top undergraduates and masters students in KAUST research groups.",
+    stipend: "USD 1,000/month + flights + housing",
+    fundingLevel: "fully-funded",
+    covers: ["Round-trip airfare", "On-campus housing", "Medical insurance", "Stipend"],
+    duration: "3–6 months",
+    disciplines: ["STEM"],
+    eligibility: [
+      "Enrolled undergraduate (3rd year+) or masters student",
+      "Minimum GPA 3.3/4.0 or equivalent",
+      "Faculty host at KAUST secured before travel",
+    ],
+    applicationWindow: "Rolling",
+    deadlineNote: DEADLINE_NOTE,
+    status: "rolling",
+    officialUrl: "https://www.kaust.edu.sa/en/study/vsrp",
+  },
+  {
+    id: "astar-summer",
+    name: "A*STAR Summer Internship",
+    country: "Singapore",
+    flag: "🇸🇬",
+    organisation: "A*STAR",
+    isGovernment: true,
+    summary:
+      "Summer research attachments at A*STAR research institutes across biomedical, physical and engineering sciences.",
+    stipend: "~SGD 1,500/month",
+    fundingLevel: "stipend",
+    covers: ["Monthly stipend"],
+    duration: "12–16 weeks",
+    disciplines: ["STEM"],
+    eligibility: [
+      "Undergraduate at a partner university",
+      "STEM major with strong academics",
+      "Able to commit full time over summer",
+    ],
+    applicationWindow: "Dec",
+    deadlineNote: DEADLINE_NOTE,
+    status: "announced",
+    officialUrl: "https://www.a-star.edu.sg",
+  },
+  {
+    id: "ntu-india-connect",
+    name: "NTU India Connect",
+    country: "Singapore",
+    flag: "🇸🇬",
+    organisation: "NTU",
+    isGovernment: true,
+    summary:
+      "Research and industry attachments at Nanyang Technological University for Indian undergraduates.",
+    stipend: "Stipend + housing",
+    fundingLevel: "stipend",
+    covers: ["Monthly stipend", "On-campus housing"],
+    duration: "8–12 weeks",
+    disciplines: ["All"],
+    eligibility: [
+      "Indian undergraduate in 2nd or 3rd year",
+      "Enrolled at an eligible Indian institution",
+      "Good academic standing",
+    ],
+    applicationWindow: "Oct",
+    deadlineNote: DEADLINE_NOTE,
+    status: "announced",
+    officialUrl: "https://www.ntu.edu.sg",
+  },
+  {
+    id: "iaeste",
+    name: "IAESTE Exchange",
+    country: "Multiple",
+    flag: "🌍",
+    organisation: "IAESTE national committees",
+    isGovernment: true,
+    summary:
+      "Paid technical internships in dozens of countries, matched through IAESTE national committees.",
+    stipend: "Local minimum wage",
+    fundingLevel: "partial",
+    covers: ["Local living stipend"],
+    duration: "8–52 weeks",
+    disciplines: ["Technical"],
+    eligibility: [
+      "Enrolled in a technical undergraduate or postgraduate programme",
+      "Applies via the IAESTE committee at the home institution",
+      "Language ability as required by host country",
+    ],
+    applicationWindow: "Dec–Jan",
+    deadlineNote: DEADLINE_NOTE,
+    status: "rolling",
+    officialUrl: "https://iaeste.org",
+  },
+  {
+    id: "esa-socis",
+    name: "ESA Summer of Code in Space",
+    country: "Europe",
+    flag: "🇪🇺",
+    organisation: "European Space Agency",
+    isGovernment: true,
+    summary:
+      "Remote coding programme contributing to open-source space software mentored by ESA-related organisations.",
+    stipend: "~€1,500 one-off",
+    fundingLevel: "stipend",
+    covers: ["One-off stipend on completion"],
+    duration: "3 months",
+    disciplines: ["CS", "Space"],
+    eligibility: [
+      "Undergraduate or postgraduate student",
+      "Proven coding ability in the project's language",
+      "Able to commit part-time over 3 months remotely",
+    ],
+    applicationWindow: "Feb–Mar",
+    deadlineNote: DEADLINE_NOTE,
+    status: "announced",
+    officialUrl: "https://socis.esa.int",
+  },
+];
