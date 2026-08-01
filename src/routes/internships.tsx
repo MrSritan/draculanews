@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import {
-  INTERNSHIPS,
-  type FundingLevel,
-  type InternshipProgram,
-  type ProgramStatus,
-} from "@/lib/internships-data";
+import { DataState } from "@/components/DataState";
+import { useOpportunities } from "@/lib/data-client/opportunities-client";
+import type {
+  FundingLevel,
+  InternshipProgram,
+  ProgramStatus,
+} from "@/lib/data-client/types";
+import { isSafeExternalUrl } from "@/lib/url-validation";
 
 export const Route = createFileRoute("/internships")({
   head: () => ({
@@ -44,18 +46,20 @@ function InternshipsContent() {
   const [funding, setFunding] = useState<FundingLevel | typeof ANY>(ANY);
   const [status, setStatus] = useState<ProgramStatus | typeof ANY>(ANY);
   const [q, setQ] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(INTERNSHIPS[0]?.id ?? null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { loading, result } = useOpportunities();
+  const INTERNSHIPS = useMemo(() => result?.data ?? [], [result]);
 
   const countries = useMemo(
     () => [ANY, ...Array.from(new Set(INTERNSHIPS.map((p) => p.country))).sort()],
-    [],
+    [INTERNSHIPS],
   );
   const disciplines = useMemo(
     () => [
       ANY,
       ...Array.from(new Set(INTERNSHIPS.flatMap((p) => p.disciplines))).sort(),
     ],
-    [],
+    [INTERNSHIPS],
   );
 
   const filtered = useMemo(() => {
@@ -71,7 +75,7 @@ function InternshipsContent() {
       }
       return true;
     });
-  }, [country, discipline, funding, status, q]);
+  }, [INTERNSHIPS, country, discipline, funding, status, q]);
 
   const selected =
     filtered.find((p) => p.id === selectedId) ?? filtered[0] ?? null;
@@ -132,20 +136,29 @@ function InternshipsContent() {
           </div>
         </div>
 
-        {filtered.length === 0 ? (
-          <EmptyState onClear={clearFilters} />
-        ) : (
-          <div className="grid gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
-            {filtered.map((p) => (
-              <ProgramCard
-                key={p.id}
-                program={p}
-                active={selected?.id === p.id}
-                onSelect={() => setSelectedId(p.id)}
-              />
-            ))}
-          </div>
-        )}
+        <DataState
+          loading={loading}
+          error={result?.error}
+          source={result?.source}
+          emptyTitle="No programmes available"
+          emptyHint="Nothing has been collected yet."
+          onRetry={() => window.location.reload()}
+        >
+          {filtered.length === 0 ? (
+            <EmptyState onClear={clearFilters} />
+          ) : (
+            <div className="grid gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
+              {filtered.map((p) => (
+                <ProgramCard
+                  key={p.id}
+                  program={p}
+                  active={selected?.id === p.id}
+                  onSelect={() => setSelectedId(p.id)}
+                />
+              ))}
+            </div>
+          )}
+        </DataState>
       </section>
 
       <aside className="scrollbar-slim overflow-y-auto rounded-lg border border-border bg-panel">
@@ -285,14 +298,23 @@ function ProgramDetail({ program }: { program: InternshipProgram }) {
       </div>
 
       <div className="border-t border-border px-5 py-3">
-        <a
-          href={program.officialUrl}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="inline-flex items-center rounded-md border border-primary/40 bg-primary/15 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/25"
-        >
-          Open official page ↗
-        </a>
+        {isSafeExternalUrl(program.officialUrl) ? (
+          <a
+            href={program.officialUrl}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="inline-flex items-center rounded-md border border-primary/40 bg-primary/15 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/25"
+          >
+            Open official page ↗
+          </a>
+        ) : (
+          <span
+            className="inline-flex items-center rounded-md border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground opacity-40"
+            title="No valid source URL"
+          >
+            Open official page ↗
+          </span>
+        )}
       </div>
     </div>
   );

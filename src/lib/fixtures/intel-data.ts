@@ -1,97 +1,28 @@
-export type EventType =
-  | "funding"
-  | "hiring"
-  | "contract"
-  | "partnership"
-  | "product_launch"
-  | "flight_test"
-  | "award"
-  | "news";
+import type {
+  ContactConfidence,
+  EventType,
+  Geography,
+  IntelCompany,
+  IntelContact,
+  IntelEvent,
+  ReviewStatus,
+  ScoreReason,
+  SourceQuality,
+} from "@/lib/data-client/types";
 
-export type Geography = "India" | "Global";
-export type ReviewStatus = "NEW" | "REVIEWED" | "BOOKMARKED" | "IGNORED";
-export type SourceQuality = "official" | "reputable" | "third_party" | "unknown";
+export type {
+  ContactConfidence,
+  EventType,
+  Geography,
+  IntelCompany,
+  IntelContact,
+  IntelEvent,
+  ReviewStatus,
+  ScoreReason,
+  SourceQuality,
+};
 
-export interface ScoreReason {
-  label: string;
-  points: number;
-}
-
-export interface IntelEvent {
-  id: string;
-  score: number; // 0-10
-  type: EventType;
-  companyId: string;
-  company: string;
-  headline: string;
-  summary: string;
-  geography: Geography;
-  sector: string[];
-  publisher: string;
-  publishedAt: string; // ISO
-  sourceUrl: string | null;
-  sourceQuality: SourceQuality;
-  status: ReviewStatus;
-  scoreBreakdown: ScoreReason[];
-}
-
-export type ContactConfidence = "verified_public" | "probable";
-
-export interface IntelContact {
-  id: string;
-  name: string;
-  designation: string;
-  relevance: string;
-  publicEmail?: string;
-  emailConfidence: ContactConfidence;
-  linkedin?: string;
-  officialProfileUrl?: string;
-  sourceUrl?: string;
-  dateFound: string;
-  outreachStatus: "none" | "queued" | "sent" | "replied";
-}
-
-export interface IntelCompany {
-  id: string;
-  name: string;
-  score: number;
-  sector: string[];
-  location: string;
-  geography: Geography;
-  latestSignal: string;
-  latestActivityAt: string;
-  hiring: boolean;
-  website?: string;
-  careers?: string;
-  linkedin?: string;
-  github?: string;
-  officialNews?: string;
-  description: string;
-  status: ReviewStatus;
-  contacts: IntelContact[];
-}
-
-export const SECTORS = [
-  "All",
-  "Launch Vehicles",
-  "Satellites",
-  "Propulsion",
-  "UAV / Drones",
-  "Avionics",
-  "Defence Electronics",
-  "Materials",
-  "Ground Systems",
-] as const;
-
-export const DATE_RANGES = [
-  { id: "today", label: "Today", days: 1 },
-  { id: "7d", label: "Last 7 days", days: 7 },
-  { id: "30d", label: "Last 30 days", days: 30 },
-  { id: "90d", label: "Last 90 days", days: 90 },
-  { id: "all", label: "All time", days: 9999 },
-] as const;
-
-export const GEOGRAPHIES = ["India + Global", "India", "Global"] as const;
+export { DATE_RANGES, GEOGRAPHIES, SECTORS } from "@/lib/data-client/types";
 
 const now = new Date();
 const daysAgo = (n: number) =>

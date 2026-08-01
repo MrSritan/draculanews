@@ -1,8 +1,11 @@
 import { useMemo, useState } from "react";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { EventTypeBadge, ScoreBadge } from "@/components/badges";
-import { events, type IntelEvent } from "@/lib/intel-data";
+import { DataState } from "@/components/DataState";
+import { useEvents } from "@/lib/data-client/events-client";
+import type { IntelEvent } from "@/lib/data-client/types";
 import { daysAgo, formatDate, formatRange } from "@/lib/date-utils";
+import { openExternal } from "@/lib/url-validation";
 
 interface DigestViewProps {
   title: string;
@@ -12,6 +15,8 @@ interface DigestViewProps {
 
 export function DigestView({ title, days, minScore }: DigestViewProps) {
   const [threshold, setThreshold] = useState(minScore);
+  const { loading, result } = useEvents();
+  const events = useMemo(() => result?.data ?? [], [result]);
 
   const items = useMemo(() => {
     const cutoff = daysAgo(days).getTime();
@@ -22,9 +27,10 @@ export function DigestView({ title, days, minScore }: DigestViewProps) {
           b.score - a.score ||
           new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
       );
-  }, [days, threshold]);
+  }, [events, days, threshold]);
 
   const range = formatRange(daysAgo(days), new Date());
+
 
   const summary = useMemo(() => {
     const companies = new Set(items.map((i) => i.company));
@@ -141,26 +147,37 @@ export function DigestView({ title, days, minScore }: DigestViewProps) {
           </div>
         </section>
 
-        {items.length === 0 ? (
-          <EmptyDigest days={days} threshold={threshold} onLower={() => setThreshold((t) => Math.max(0, t - 1))} />
-        ) : (
-          <div className="space-y-4">
-            {grouped.map(([day, list]) => (
-              <div key={day} className="overflow-hidden rounded-lg border border-border bg-panel">
-                <div className="sticky top-0 z-10 border-b border-border bg-panel/95 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
-                  {formatDate(day)}
+        <DataState
+          loading={loading}
+          error={result?.error}
+          source={result?.source}
+          isEmpty={!loading && !result?.error && events.length === 0}
+          emptyTitle="No events available"
+          emptyHint="Nothing has been collected yet for this digest window."
+          onRetry={() => window.location.reload()}
+        >
+          {items.length === 0 ? (
+            <EmptyDigest days={days} threshold={threshold} onLower={() => setThreshold((t) => Math.max(0, t - 1))} />
+          ) : (
+            <div className="space-y-4">
+              {grouped.map(([day, list]) => (
+                <div key={day} className="overflow-hidden rounded-lg border border-border bg-panel">
+                  <div className="sticky top-0 z-10 border-b border-border bg-panel/95 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
+                    {formatDate(day)}
+                  </div>
+                  <ul className="divide-y divide-border">
+                    {list.map((e) => (
+                      <li key={e.id}>
+                        <DigestRow event={e} />
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="divide-y divide-border">
-                  {list.map((e) => (
-                    <li key={e.id}>
-                      <DigestRow event={e} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </DataState>
+
       </div>
     </div>
   );
@@ -179,7 +196,7 @@ function SummaryStat({ label, value }: { label: string; value: string }) {
 
 function DigestRow({ event }: { event: IntelEvent }) {
   const openSource = () => {
-    if (event.sourceUrl) window.open(event.sourceUrl, "_blank", "noopener,noreferrer");
+    openExternal(event.sourceUrl);
   };
   return (
     <div className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-white/[0.03]">

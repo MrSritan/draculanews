@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { DataState } from "@/components/DataState";
 import {
   EventTypeBadge,
   ScoreBadge,
@@ -10,7 +11,11 @@ import {
   Tag,
 } from "@/components/badges";
 import { dateRangeDays, useFilters } from "@/lib/filters-context";
-import { events, sourceQualityLabel, type IntelEvent } from "@/lib/intel-data";
+import { useEvents } from "@/lib/data-client/events-client";
+import type { IntelEvent } from "@/lib/data-client/types";
+import { sourceQualityLabel } from "@/lib/format";
+import { isSafeExternalUrl, openExternal } from "@/lib/url-validation";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -43,8 +48,13 @@ function NewsFeedPage() {
 function NewsFeedContent() {
   const filters = useFilters();
   const [sortBy, setSortBy] = useState<"score" | "newest" | "oldest">("score");
-  const filtered = useMemo(() => filterEvents(events, filters, sortBy), [filters, sortBy]);
-  const [selectedId, setSelectedId] = useState<string | null>(filtered[0]?.id ?? null);
+  const { loading, result } = useEvents();
+  const events = useMemo(() => result?.data ?? [], [result]);
+  const filtered = useMemo(
+    () => filterEvents(events, filters, sortBy),
+    [events, filters, sortBy],
+  );
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected =
     filtered.find((e) => e.id === selectedId) ?? filtered[0] ?? null;
 
@@ -72,9 +82,15 @@ function NewsFeedContent() {
           </label>
         </div>
 
-        {filtered.length === 0 ? (
-          <EmptyState />
-        ) : (
+        <DataState
+          loading={loading}
+          error={result?.error}
+          source={result?.source}
+          isEmpty={!loading && !result?.error && filtered.length === 0}
+          emptyTitle="No signals match the current filters."
+          emptyHint="Try widening date range, lowering minimum score, or clearing the sector filter."
+          onRetry={() => window.location.reload()}
+        >
           <ul className="divide-y divide-border">
             {filtered.map((e) => (
               <li key={e.id}>
@@ -86,8 +102,10 @@ function NewsFeedContent() {
               </li>
             ))}
           </ul>
-        )}
+        </DataState>
       </section>
+
+
 
       <aside className="scrollbar-slim overflow-y-auto rounded-lg border border-border bg-panel">
         {selected ? <EventDetail event={selected} /> : <EmptyDetail />}
@@ -108,8 +126,9 @@ function EventRow({
   const openSource = (e: React.MouseEvent) => {
     if (!event.sourceUrl) return;
     e.stopPropagation();
-    window.open(event.sourceUrl, "_blank", "noopener,noreferrer");
+    openExternal(event.sourceUrl);
   };
+
 
   return (
     <button
@@ -151,7 +170,7 @@ function EventRow({
 }
 
 function EventDetail({ event }: { event: IntelEvent }) {
-  const hasSource = Boolean(event.sourceUrl);
+  const hasSource = isSafeExternalUrl(event.sourceUrl);
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-border px-5 py-4">
@@ -214,7 +233,7 @@ function EventDetail({ event }: { event: IntelEvent }) {
             <a
               href={event.sourceUrl ?? undefined}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noreferrer noopener"
               className="mt-2 block break-all text-xs text-primary hover:underline"
             >
               {event.sourceUrl}
@@ -230,10 +249,7 @@ function EventDetail({ event }: { event: IntelEvent }) {
           <ActionButton
             variant="primary"
             disabled={!hasSource}
-            onClick={() =>
-              hasSource &&
-              window.open(event.sourceUrl!, "_blank", "noopener,noreferrer")
-            }
+            onClick={() => openExternal(event.sourceUrl)}
           >
             Open Source
           </ActionButton>

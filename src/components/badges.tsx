@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { EventType, ReviewStatus, SourceQuality } from "@/lib/intel-data";
+import type { EventType, ReviewStatus, SourceQuality } from "@/lib/data-client/types";
 
 export function ScoreBadge({ score }: { score: number }) {
   const tone =

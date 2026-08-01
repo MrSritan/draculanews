@@ -1,25 +1,10 @@
-export type ProgramStatus = "open" | "closed" | "rolling" | "announced";
-export type FundingLevel = "fully-funded" | "stipend" | "partial";
+import type {
+  FundingLevel,
+  InternshipProgram,
+  ProgramStatus,
+} from "@/lib/data-client/types";
 
-export interface InternshipProgram {
-  id: string;
-  name: string;
-  country: string;
-  flag: string;
-  organisation: string;
-  isGovernment: boolean;
-  summary: string;
-  stipend: string;
-  fundingLevel: FundingLevel;
-  covers: string[];
-  duration: string;
-  disciplines: string[];
-  eligibility: string[];
-  applicationWindow: string;
-  deadlineNote: string;
-  status: ProgramStatus;
-  officialUrl: string;
-}
+export type { FundingLevel, InternshipProgram, ProgramStatus };
 
 const DEADLINE_NOTE =
   "Window is indicative and changes annually — confirm on the official site.";

@@ -1,8 +1,16 @@
 import { Link, useRouterState, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { FiltersProvider, useFilters } from "@/lib/filters-context";
-import { DATE_RANGES, GEOGRAPHIES, SECTORS, events } from "@/lib/intel-data";
+import {
+  DATE_RANGES,
+  GEOGRAPHIES,
+  SECTORS,
+  type IntelEvent,
+} from "@/lib/data-client/types";
+import { useEvents } from "@/lib/data-client/events-client";
+import { DataSourceBadge } from "@/components/DataState";
 import { useBookmarkCount } from "@/lib/bookmarks-store";
+
 
 const NAV: Array<{ to: LinkProps["to"]; label: string }> = [
   { to: "/", label: "News Feed" },
@@ -199,11 +207,14 @@ function FieldLabel({ label, children }: { label: string; children: ReactNode })
 function TopBar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const title = NAV.find((n) => n.to === pathname)?.label ?? "Dashboard";
+  const { result } = useEvents();
+  const events = result?.data ?? [];
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface-2 px-6">
       <div className="flex items-baseline gap-3">
         <h1 className="font-serif text-lg font-semibold text-foreground">{title}</h1>
         <span className="text-xs text-muted-foreground">Local sample data</span>
+        <DataSourceBadge source={result?.source} />
       </div>
       <div className="flex items-center gap-4 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
@@ -215,7 +226,7 @@ function TopBar() {
         <span className="text-muted-foreground/50">|</span>
         <button
           type="button"
-          onClick={exportEventsToCsv}
+          onClick={() => exportEventsToCsv(events)}
           className="rounded-md border border-primary/40 bg-primary/15 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/25"
         >
           Export
@@ -225,7 +236,8 @@ function TopBar() {
   );
 }
 
-function exportEventsToCsv() {
+function exportEventsToCsv(events: IntelEvent[]) {
+
   const headers = [
     "id",
     "publishedAt",

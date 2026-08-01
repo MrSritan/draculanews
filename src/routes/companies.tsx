@@ -2,8 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { ScoreBadge, StatusBadge, Tag } from "@/components/badges";
+import { DataState } from "@/components/DataState";
 import { useFilters } from "@/lib/filters-context";
-import { companies, events, type IntelCompany } from "@/lib/intel-data";
+import { useCompanies } from "@/lib/data-client/companies-client";
+import { useEvents } from "@/lib/data-client/events-client";
+import type { IntelCompany } from "@/lib/data-client/types";
+import { isSafeExternalUrl } from "@/lib/url-validation";
 
 export const Route = createFileRoute("/companies")({
   head: () => ({
@@ -39,6 +43,8 @@ function CompaniesPage() {
 function CompaniesContent() {
   const filters = useFilters();
   const [query, setQuery] = useState("");
+  const { loading, result } = useCompanies();
+  const companies = useMemo(() => result?.data ?? [], [result]);
 
   const filtered = useMemo(() => {
     return companies
@@ -61,9 +67,9 @@ function CompaniesContent() {
         );
       })
       .sort((a, b) => b.score - a.score);
-  }, [filters, query]);
+  }, [companies, filters, query]);
 
-  const [selectedId, setSelectedId] = useState<string | null>(filtered[0]?.id ?? null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected =
     filtered.find((c) => c.id === selectedId) ?? filtered[0] ?? null;
 
@@ -85,6 +91,14 @@ function CompaniesContent() {
           />
         </div>
 
+        <DataState
+          loading={loading}
+          error={result?.error}
+          source={result?.source}
+          emptyTitle="No companies match the current filters."
+          emptyHint="Try widening the filters or clearing the search."
+          onRetry={() => window.location.reload()}
+        >
         <div className="scrollbar-slim min-w-0 flex-1 overflow-auto">
           <table className="w-full min-w-[720px] text-left text-xs">
             <thead className="sticky top-0 bg-panel">
@@ -159,6 +173,7 @@ function CompaniesContent() {
             </tbody>
           </table>
         </div>
+        </DataState>
       </section>
 
       <aside className="scrollbar-slim overflow-y-auto rounded-lg border border-border bg-panel">
@@ -173,7 +188,8 @@ function CompaniesContent() {
 }
 
 function CompanyDetail({ company }: { company: IntelCompany }) {
-  const timeline = events
+  const { result: eventsResult } = useEvents();
+  const timeline = (eventsResult?.data ?? [])
     .filter((e) => e.companyId === company.id)
     .sort(
       (a, b) =>
@@ -290,14 +306,20 @@ function CompanyDetail({ company }: { company: IntelCompany }) {
                   {c.sourceUrl && (
                     <div className="mt-1 truncate text-[11px] text-muted-foreground">
                       Source:{" "}
-                      <a
-                        href={c.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline"
-                      >
-                        {c.sourceUrl}
-                      </a>
+                      {isSafeExternalUrl(c.sourceUrl) ? (
+                        <a
+                          href={c.sourceUrl}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          className="text-primary hover:underline"
+                        >
+                          {c.sourceUrl}
+                        </a>
+                      ) : (
+                        <span className="opacity-40" title="No valid source URL">
+                          {c.sourceUrl}
+                        </span>
+                      )}
                     </div>
                   )}
                 </li>
@@ -311,7 +333,7 @@ function CompanyDetail({ company }: { company: IntelCompany }) {
 }
 
 function LinkRow({ label, href }: { label: string; href?: string }) {
-  if (!href)
+  if (!href || !isSafeExternalUrl(href))
     return (
       <li className="flex items-center justify-between text-muted-foreground/60">
         <span>{label}</span>
@@ -324,7 +346,7 @@ function LinkRow({ label, href }: { label: string; href?: string }) {
       <a
         href={href}
         target="_blank"
-        rel="noopener noreferrer"
+        rel="noreferrer noopener"
         className="max-w-[260px] truncate text-primary hover:underline"
       >
         {href}
