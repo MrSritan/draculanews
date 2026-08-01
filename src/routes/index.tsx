@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { DataState } from "@/components/DataState";
 import {
   EventTypeBadge,
   ScoreBadge,
@@ -10,7 +11,11 @@ import {
   Tag,
 } from "@/components/badges";
 import { dateRangeDays, useFilters } from "@/lib/filters-context";
-import { events, sourceQualityLabel, type IntelEvent } from "@/lib/intel-data";
+import { useEvents } from "@/lib/data-client/events-client";
+import type { IntelEvent } from "@/lib/data-client/types";
+import { sourceQualityLabel } from "@/lib/format";
+import { isSafeExternalUrl, openExternal } from "@/lib/url-validation";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
