@@ -170,7 +170,7 @@ function EventRow({
 }
 
 function EventDetail({ event }: { event: IntelEvent }) {
-  const hasSource = Boolean(event.sourceUrl);
+  const hasSource = isSafeExternalUrl(event.sourceUrl);
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-border px-5 py-4">
@@ -233,7 +233,7 @@ function EventDetail({ event }: { event: IntelEvent }) {
             <a
               href={event.sourceUrl ?? undefined}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noreferrer noopener"
               className="mt-2 block break-all text-xs text-primary hover:underline"
             >
               {event.sourceUrl}
@@ -249,10 +249,7 @@ function EventDetail({ event }: { event: IntelEvent }) {
           <ActionButton
             variant="primary"
             disabled={!hasSource}
-            onClick={() =>
-              hasSource &&
-              window.open(event.sourceUrl!, "_blank", "noopener,noreferrer")
-            }
+            onClick={() => openExternal(event.sourceUrl)}
           >
             Open Source
           </ActionButton>
