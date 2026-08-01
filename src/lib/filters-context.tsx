@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
-import { DATE_RANGES, GEOGRAPHIES, SECTORS } from "@/lib/intel-data";
+import { DATE_RANGES, GEOGRAPHIES, SECTORS } from "@/lib/data-client/types";
 
 type DateRangeId = (typeof DATE_RANGES)[number]["id"];
 type GeographyId = (typeof GEOGRAPHIES)[number];
