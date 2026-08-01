@@ -196,7 +196,7 @@ function SummaryStat({ label, value }: { label: string; value: string }) {
 
 function DigestRow({ event }: { event: IntelEvent }) {
   const openSource = () => {
-    if (event.sourceUrl) window.open(event.sourceUrl, "_blank", "noopener,noreferrer");
+    openExternal(event.sourceUrl);
   };
   return (
     <div className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-white/[0.03]">
