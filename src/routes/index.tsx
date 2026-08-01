@@ -48,8 +48,13 @@ function NewsFeedPage() {
 function NewsFeedContent() {
   const filters = useFilters();
   const [sortBy, setSortBy] = useState<"score" | "newest" | "oldest">("score");
-  const filtered = useMemo(() => filterEvents(events, filters, sortBy), [filters, sortBy]);
-  const [selectedId, setSelectedId] = useState<string | null>(filtered[0]?.id ?? null);
+  const { loading, result } = useEvents();
+  const events = useMemo(() => result?.data ?? [], [result]);
+  const filtered = useMemo(
+    () => filterEvents(events, filters, sortBy),
+    [events, filters, sortBy],
+  );
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected =
     filtered.find((e) => e.id === selectedId) ?? filtered[0] ?? null;
 
@@ -77,9 +82,15 @@ function NewsFeedContent() {
           </label>
         </div>
 
-        {filtered.length === 0 ? (
-          <EmptyState />
-        ) : (
+        <DataState
+          loading={loading}
+          error={result?.error}
+          source={result?.source}
+          isEmpty={!loading && !result?.error && filtered.length === 0}
+          emptyTitle="No signals match the current filters."
+          emptyHint="Try widening date range, lowering minimum score, or clearing the sector filter."
+          onRetry={() => window.location.reload()}
+        >
           <ul className="divide-y divide-border">
             {filtered.map((e) => (
               <li key={e.id}>
@@ -91,7 +102,9 @@ function NewsFeedContent() {
               </li>
             ))}
           </ul>
-        )}
+        </DataState>
+      </section>
+
       </section>
 
       <aside className="scrollbar-slim overflow-y-auto rounded-lg border border-border bg-panel">
