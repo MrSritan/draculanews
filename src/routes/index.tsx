@@ -105,7 +105,7 @@ function NewsFeedContent() {
         </DataState>
       </section>
 
-      </section>
+
 
       <aside className="scrollbar-slim overflow-y-auto rounded-lg border border-border bg-panel">
         {selected ? <EventDetail event={selected} /> : <EmptyDetail />}
