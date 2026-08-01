@@ -147,26 +147,37 @@ export function DigestView({ title, days, minScore }: DigestViewProps) {
           </div>
         </section>
 
-        {items.length === 0 ? (
-          <EmptyDigest days={days} threshold={threshold} onLower={() => setThreshold((t) => Math.max(0, t - 1))} />
-        ) : (
-          <div className="space-y-4">
-            {grouped.map(([day, list]) => (
-              <div key={day} className="overflow-hidden rounded-lg border border-border bg-panel">
-                <div className="sticky top-0 z-10 border-b border-border bg-panel/95 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
-                  {formatDate(day)}
+        <DataState
+          loading={loading}
+          error={result?.error}
+          source={result?.source}
+          isEmpty={!loading && !result?.error && events.length === 0}
+          emptyTitle="No events available"
+          emptyHint="Nothing has been collected yet for this digest window."
+          onRetry={() => window.location.reload()}
+        >
+          {items.length === 0 ? (
+            <EmptyDigest days={days} threshold={threshold} onLower={() => setThreshold((t) => Math.max(0, t - 1))} />
+          ) : (
+            <div className="space-y-4">
+              {grouped.map(([day, list]) => (
+                <div key={day} className="overflow-hidden rounded-lg border border-border bg-panel">
+                  <div className="sticky top-0 z-10 border-b border-border bg-panel/95 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
+                    {formatDate(day)}
+                  </div>
+                  <ul className="divide-y divide-border">
+                    {list.map((e) => (
+                      <li key={e.id}>
+                        <DigestRow event={e} />
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="divide-y divide-border">
-                  {list.map((e) => (
-                    <li key={e.id}>
-                      <DigestRow event={e} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </DataState>
+
       </div>
     </div>
   );
