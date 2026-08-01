@@ -126,8 +126,9 @@ function EventRow({
   const openSource = (e: React.MouseEvent) => {
     if (!event.sourceUrl) return;
     e.stopPropagation();
-    window.open(event.sourceUrl, "_blank", "noopener,noreferrer");
+    openExternal(event.sourceUrl);
   };
+
 
   return (
     <button
