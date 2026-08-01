@@ -1,8 +1,16 @@
 import { Link, useRouterState, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { FiltersProvider, useFilters } from "@/lib/filters-context";
-import { DATE_RANGES, GEOGRAPHIES, SECTORS, events } from "@/lib/intel-data";
+import {
+  DATE_RANGES,
+  GEOGRAPHIES,
+  SECTORS,
+  type IntelEvent,
+} from "@/lib/data-client/types";
+import { useEvents } from "@/lib/data-client/events-client";
+import { DataSourceBadge } from "@/components/DataState";
 import { useBookmarkCount } from "@/lib/bookmarks-store";
+
 
 const NAV: Array<{ to: LinkProps["to"]; label: string }> = [
   { to: "/", label: "News Feed" },
