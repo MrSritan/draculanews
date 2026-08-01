@@ -1,8 +1,11 @@
 import { useMemo, useState } from "react";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { EventTypeBadge, ScoreBadge } from "@/components/badges";
-import { events, type IntelEvent } from "@/lib/intel-data";
+import { DataState } from "@/components/DataState";
+import { useEvents } from "@/lib/data-client/events-client";
+import type { IntelEvent } from "@/lib/data-client/types";
 import { daysAgo, formatDate, formatRange } from "@/lib/date-utils";
+import { openExternal } from "@/lib/url-validation";
 
 interface DigestViewProps {
   title: string;
@@ -12,6 +15,8 @@ interface DigestViewProps {
 
 export function DigestView({ title, days, minScore }: DigestViewProps) {
   const [threshold, setThreshold] = useState(minScore);
+  const { loading, result } = useEvents();
+  const events = useMemo(() => result?.data ?? [], [result]);
 
   const items = useMemo(() => {
     const cutoff = daysAgo(days).getTime();
@@ -22,9 +27,10 @@ export function DigestView({ title, days, minScore }: DigestViewProps) {
           b.score - a.score ||
           new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
       );
-  }, [days, threshold]);
+  }, [events, days, threshold]);
 
   const range = formatRange(daysAgo(days), new Date());
+
 
   const summary = useMemo(() => {
     const companies = new Set(items.map((i) => i.company));
