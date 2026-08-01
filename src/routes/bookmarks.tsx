@@ -9,7 +9,10 @@ import {
   useBookmarks,
   type BookmarkRecord,
 } from "@/lib/bookmarks-store";
-import { events, type IntelEvent } from "@/lib/intel-data";
+import { DataState } from "@/components/DataState";
+import { useEvents } from "@/lib/data-client/events-client";
+import type { IntelEvent } from "@/lib/data-client/types";
+import { isSafeExternalUrl } from "@/lib/url-validation";
 
 export const Route = createFileRoute("/bookmarks")({
   head: () => ({
@@ -52,7 +55,9 @@ function BookmarksContent() {
   const [sort, setSort] = useState<SortMode>("saved");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const eventMap = useMemo(() => new Map(events.map((e) => [e.id, e])), []);
+  const { loading, result } = useEvents();
+  const events = useMemo(() => result?.data ?? [], [result]);
+  const eventMap = useMemo(() => new Map(events.map((e) => [e.id, e])), [events]);
 
   const rows: Row[] = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -150,25 +155,34 @@ function BookmarksContent() {
           </div>
         </header>
 
-        {rows.length === 0 ? (
-          <EmptyList hasQuery={query.trim().length > 0} />
-        ) : (
-          <ul className="scrollbar-slim flex-1 divide-y divide-border overflow-y-auto">
-            {rows.map((row) => (
-              <li key={row.bookmark.id}>
-                <BookmarkRow
-                  row={row}
-                  active={selected?.bookmark.id === row.bookmark.id}
-                  onSelect={() => setSelectedId(row.bookmark.id)}
-                  onRemove={() => {
-                    removeBookmark(row.bookmark.id);
-                    if (selectedId === row.bookmark.id) setSelectedId(null);
-                  }}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
+        <DataState
+          loading={loading}
+          error={result?.error}
+          source={result?.source}
+          emptyTitle="No bookmarks yet"
+          emptyHint="Open an event in the News Feed and choose Bookmark to save it here."
+          onRetry={() => window.location.reload()}
+        >
+          {rows.length === 0 ? (
+            <EmptyList hasQuery={query.trim().length > 0} />
+          ) : (
+            <ul className="scrollbar-slim flex-1 divide-y divide-border overflow-y-auto">
+              {rows.map((row) => (
+                <li key={row.bookmark.id}>
+                  <BookmarkRow
+                    row={row}
+                    active={selected?.bookmark.id === row.bookmark.id}
+                    onSelect={() => setSelectedId(row.bookmark.id)}
+                    onRemove={() => {
+                      removeBookmark(row.bookmark.id);
+                      if (selectedId === row.bookmark.id) setSelectedId(null);
+                    }}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </DataState>
       </section>
 
       <aside className="scrollbar-slim overflow-y-auto rounded-lg border border-border bg-panel">
@@ -326,15 +340,19 @@ function BookmarkDetail({ row, onRemove }: { row: Row; onRemove: () => void }) {
 
         <section>
           <SectionHeading>Source</SectionHeading>
-          {event.sourceUrl ? (
+          {isSafeExternalUrl(event.sourceUrl) ? (
             <a
-              href={event.sourceUrl}
+              href={event.sourceUrl as string}
               target="_blank"
               rel="noreferrer noopener"
               className="mt-2 block break-all text-xs text-primary hover:underline"
             >
               Open Source
             </a>
+          ) : event.sourceUrl ? (
+            <p className="mt-2 text-xs opacity-40" title="No valid source URL">
+              Open Source
+            </p>
           ) : (
             <p className="mt-2 text-xs text-muted-foreground">Source unavailable</p>
           )}
